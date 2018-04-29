@@ -1,6 +1,12 @@
 #include <SPI.h>
 #include <Pixy.h>
 #include <Stepper.h>
+#include <Ultrasonic.h>
+
+#define trigPin 2
+#define echoPin 3
+
+Ultrasonic ultrasonic(2, 3);
 
 const int stepsPerRev =400;
 static int dir;//-1 is left, 0 is forward, 1 is right
@@ -15,6 +21,8 @@ void turnRight();
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);  
   dir=0;
   pixy.init();
   stepperR.setSpeed(60);
@@ -28,34 +36,36 @@ void loop() {
   static int y=0;
   uint16_t blocks;
   // put your main code here, to run repeatedly:
-  blocks = pixy.getBlocks();
-  if (blocks){
-    i++;
-    if (i%10==0){
-      x=pixy.blocks[1].x;
-      Serial.print("X Coordinate: ");
-      Serial.println(x);
-      if (x<140){
-        Serial.println("Moving Left:");
-        dir=-1;
-        //delay(500);
-      }else if (x>180){
-        Serial.println("Move Right:");
-        dir=1;
-       // delay(500);
+  while(ultrasonic.distanceRead(INC) < 12) {
+    blocks = pixy.getBlocks();
+    if (blocks){
+      i++;
+      if (i%10==0){
+        x=pixy.blocks[1].x;
+        Serial.print("X Coordinate: ");
+        Serial.println(x);
+        if (x<140){
+          Serial.println("Moving Left:");
+          dir=-1;
+          //delay(500);
+        }else if (x>180){
+          Serial.println("Move Right:");
+          dir=1;
+         // delay(500);
+        }
       }
+    } 
+    switch (dir){
+      case 0:
+        forward();
+        break;
+      case 1:
+        turnRight();
+        break;
+      case -1:
+        turnLeft();
+        break;
     }
-  } 
-  switch (dir){
-    case 0:
-      forward();
-      break;
-    case 1:
-      turnRight();
-      break;
-    case -1:
-      turnLeft();
-      break;
   }
 }
 
