@@ -1,3 +1,5 @@
+ECE 110 Honors Lab Project:
+
 Purpose:
 The goal of this project is to make moving things easier. This entails creating a robot that can carry your stuff around and follow you. This could be very helpful for people who may need help carrying their things, such as handicapped, elderly people or lazy people.
 
